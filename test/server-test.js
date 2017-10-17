@@ -48,19 +48,33 @@ describe('Server', function() {
   describe('GET /api/traits/:id', function(){
     beforeEach(function() {
       app.locals.traits = {
-        1: {name: "Third Culture Kid"
+        1: {name: "Third Culture Kid",
             description: "American passport, German upbringing",
-            }
+          }
       };
     });
     it('should return a 404 if the resource is not found', function(done) {
       this.request.get('/api/traits/hihi', function(error, response) {
         if (error) { done(error) };
-        console.log(app.locals.traits)
-        console.log(response.statusCode)
         assert.equal(response.statusCode, 404);
         done();
       });
+    });
+
+    it('should return the correct data from my trait', function(done) {
+      const id   = 1;
+      const data = app.locals.traits[id]
+
+      this.request.get('/api/traits/1', function(error, response) {
+        if (error) { done(error) };
+        assert(response.body.includes(id),
+          `${response.body} does not include "${id}".`);
+        assert(response.body.includes(data["name"]),
+          `${response.body} does not include "${data["name"]}".`);
+        assert(response.body.includes(data["description"]),
+          `${response.body} does not include "${data["description"]}".`);
+        done();
+      })
     });
   });
 

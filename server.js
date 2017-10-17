@@ -1,21 +1,30 @@
 const express    = require('express');
 const app        = express();
-// const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true} ));
 
 app.set('port', process.env.PORT || 3000);
-app.locals.title = 'Who Am I'
+app.locals.title = 'Who Am I';
 
 app.get('/', function(request, response) {
   response.send(app.locals.title);
 });
 
+app.get('/api/traits', function(request, response) {
+  let traits = app.locals.traits;
+
+  response.json( { traits });
+});
+
 app.get('/api/traits/:id', function(request, response) {
-  let id = request.params.id;
-  let description = app.locals.traits[id];
+  let id    = request.params.id;
+  let trait = app.locals.traits[id];
 
-  if (!description) { return response.sendStatus(404) };
+  if (!trait) { return response.sendStatus(404) };
 
-  response.json({ id, description });
+  response.json({ id, trait });
 })
 
 if (!module.parent) {
